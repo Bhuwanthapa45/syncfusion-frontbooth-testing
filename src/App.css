@@ -10,6 +10,10 @@
 @import '@syncfusion/ej2-react-pdfviewer/styles/material.css';
 @import '@syncfusion/ej2-react-documenteditor/styles/material.css';
 @import '@syncfusion/ej2-react-spreadsheet/styles/material.css';
+@import '@syncfusion/ej2-spreadsheet/styles/material.css';
+@import '@syncfusion/ej2-grids/styles/material.css';
+
+
 
 :root {
   --primary-color: #0078d4;

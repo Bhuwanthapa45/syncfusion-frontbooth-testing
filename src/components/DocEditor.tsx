@@ -66,9 +66,9 @@ const DocEditor: React.FC<DocEditorProps> = ({ file }) => {
   const containerRef = useRef<DocumentEditorContainerComponent>(null);
 
   useEffect(() => {
-    // Open the file when the component mounts or file changes
+    
     if (containerRef.current && file) {
-      // Small timeout to ensure the component is rendered before opening
+
       setTimeout(() => {
           containerRef.current?.documentEditor.open(file);
       }, 100);
@@ -80,23 +80,23 @@ const DocEditor: React.FC<DocEditorProps> = ({ file }) => {
   };
 
   return (
-    // 1. FLEX CONTAINER: Forces the layout to fill 100% of the parent
+    
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       
-      {/* 2. HEADER: Takes up only the space it needs */}
+      
       <div style={{ padding: '10px', background: '#eee', flexShrink: 0 }}>
         <button className="btn btn-primary" onClick={handleDownload}>
             Download .DOCX
         </button>
       </div>
 
-      {/* 3. EDITOR WRAPPER: 'flex: 1' makes it expand to fill all remaining space */}
+     
       <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
         <DocumentEditorContainerComponent
           ref={containerRef}
           id="doc-editor"
-          height="100%"    // Important: Tell the component to fill the wrapper
-          width="100%"     // Important: Tell the component to fill the width
+          height="100%"    
+          width="100%"     
           serviceUrl={SERVICE_URL}
           enableToolbar={true}
         >

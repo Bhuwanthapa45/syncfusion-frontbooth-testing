@@ -14,6 +14,7 @@
     "@syncfusion/ej2-pdfviewer": "^32.1.19",
     "@syncfusion/ej2-react-buttons": "^32.1.19",
     "@syncfusion/ej2-react-documenteditor": "^32.1.19",
+    "@syncfusion/ej2-react-image-editor": "^32.1.19",
     "@syncfusion/ej2-react-inputs": "^32.1.19",
     "@syncfusion/ej2-react-navigations": "^32.1.19",
     "@syncfusion/ej2-react-pdfviewer": "^32.1.19",

@@ -1,97 +1,72 @@
-import React, { useRef, useEffect, useState } from 'react';
+
+
+import React, { useRef, useEffect } from 'react';
+import { ImageEditorComponent } from '@syncfusion/ej2-react-image-editor';
+import type { ZoomSettingsModel } from '@syncfusion/ej2-react-image-editor';
 
 interface ImageAnnotatorProps {
   file: File;
 }
 
 const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({ file }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [imgSrc, setImgSrc] = useState<string>('');
-  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+  const imgEditorRef = useRef<ImageEditorComponent>(null);
 
-  // Load Image
   useEffect(() => {
-    const url = URL.createObjectURL(file);
-    setImgSrc(url);
-    const img = new Image();
-    img.src = url;
-    img.onload = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
+    if (file && imgEditorRef.current) {
+      const reader = new FileReader();
       
-      // Fit canvas to image but limit max width for UI
-      const maxWidth = 1000;
-      const scale = Math.min(maxWidth / img.width, 1);
+     
+      reader.readAsDataURL(file);
       
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-      
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.scale(scale, scale);
-        ctx.drawImage(img, 0, 0);
-        
-        // Setup drawing style
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = 'red';
-        ctx.lineWidth = 4 / scale; // Adjust width based on scale
-        contextRef.current = ctx;
-        // Reset scale for drawing
-        ctx.setTransform(1, 0, 0, 1, 0, 0); 
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // Redraw at canvas size
-        
-        // Re-apply styles after reset
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = 'red';
-        ctx.lineWidth = 4;
-      }
-    };
+      reader.onload = () => {
+        const base64String = reader.result as string;
+       
+        imgEditorRef.current?.open(base64String);
+      };
+    }
   }, [file]);
 
-  const startDrawing = ({ nativeEvent }: React.MouseEvent) => {
-    const { offsetX, offsetY } = nativeEvent;
-    contextRef.current?.beginPath();
-    contextRef.current?.moveTo(offsetX, offsetY);
-    setIsDrawing(true);
-  };
-
-  const finishDrawing = () => {
-    contextRef.current?.closePath();
-    setIsDrawing(false);
-  };
-
-  const draw = ({ nativeEvent }: React.MouseEvent) => {
-    if (!isDrawing) return;
-    const { offsetX, offsetY } = nativeEvent;
-    contextRef.current?.lineTo(offsetX, offsetY);
-    contextRef.current?.stroke();
-  };
-
   const handleDownload = () => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const link = document.createElement('a');
-      link.download = `annotated_${file.name}`;
-      link.href = canvas.toDataURL('image/jpeg', 0.8);
-      link.click();
+    if (imgEditorRef.current) {
+      
+      const fileType = file.type.split('/')[1] || 'png';
+      
+      
+      imgEditorRef.current.export(file.name, fileType as any);
     }
+  };
+
+
+  const zoomSettings: ZoomSettingsModel = {
+    maxZoomFactor: 30,
+    minZoomFactor: 0.1,
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div style={{ padding: '10px', background: '#eee', display: 'flex', justifyContent: 'space-between' }}>
-        <span>Freehand Drawing (Red Pen)</span>
-        <button className="btn btn-primary" onClick={handleDownload}>Download Image</button>
+      
+     
+      <div style={{ padding: '10px', background: '#eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontWeight: 'bold' }}>Frontbooths Image Annotator</span>
+        <button className="btn btn-primary" onClick={handleDownload}>
+          Download / Save Image
+        </button>
       </div>
-      <div style={{ flex: 1, overflow: 'auto', display: 'flex', justifyContent: 'center', background: '#333', padding: '20px' }}>
-        <canvas
-          ref={canvasRef}
-          onMouseDown={startDrawing}
-          onMouseUp={finishDrawing}
-          onMouseMove={draw}
-          onMouseLeave={finishDrawing}
-          style={{ cursor: 'crosshair', boxShadow: '0 0 10px rgba(0,0,0,0.5)' }}
+
+      {/* Editor Container */}
+      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+        <ImageEditorComponent 
+          ref={imgEditorRef}
+          height="100%"
+          width="100%"
+          zoomSettings={zoomSettings}
+      
+          toolbar={[
+            'Annotate', 'Pen', 'Text', 'Rectangle', 'Circle', 'Arrow', 'Line', 'Path', 
+            'ZoomIn', 'ZoomOut', 'Pan', 'Reset', 
+            'Crop', 'Rotate', 'Flip', 
+            'Undo', 'Redo', 'Save' 
+          ]}
         />
       </div>
     </div>
@@ -99,4 +74,3 @@ const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({ file }) => {
 };
 
 export default ImageAnnotator;
-

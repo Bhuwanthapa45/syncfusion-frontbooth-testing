@@ -15,13 +15,15 @@ const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({ file }) => {
     if (file && imgEditorRef.current) {
       const reader = new FileReader();
       
-     
       reader.readAsDataURL(file);
       
       reader.onload = () => {
         const base64String = reader.result as string;
-       
-        imgEditorRef.current?.open(base64String);
+        setTimeout(() => {
+            if (imgEditorRef.current) {
+                imgEditorRef.current.open(base64String);
+            }
+        }, 300); 
       };
     }
   }, [file]);

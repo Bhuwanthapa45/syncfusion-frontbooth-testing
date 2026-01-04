@@ -1,6 +1,5 @@
 import  { useState } from 'react';
 import './App.css';
-
 import FileUploader from './components/FileUploader';
 import PdfViewer from './components/PdfViewer';
 import DocEditor from './components/DocEditor';

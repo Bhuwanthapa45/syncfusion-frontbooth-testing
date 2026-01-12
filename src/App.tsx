@@ -6,6 +6,7 @@ import DocEditor from './components/DocEditor';
 import SpreadsheetViewer from './components/SpreadsheetViewer';
 import ImageAnnotator from './components/ImageAnnotator';
 import PptViewer from './components/PptViewer';
+import MediaPlayer from './components/MediaPlayer';
 import { getFileType, type  FileType } from './utils/fileHelpers';
 
 
@@ -46,6 +47,10 @@ function App() {
         return <ImageAnnotator file={currentFile} />;
       case 'POWERPOINT':
         return <PptViewer file={currentFile} />;
+      case 'VIDEO':
+        return <MediaPlayer file={currentFile} type="VIDEO" />;
+      case 'AUDIO':
+        return <MediaPlayer file={currentFile} type="AUDIO" />;
       default:
         return <div>Unsupported File</div>;
     }
@@ -54,14 +59,16 @@ function App() {
   return (
     <div className="app-container">
       <header className="toolbar">
-        <h2 style={{ margin: 0 }}>Fronthbooth Document Viewer</h2>
+        <h2 style={{ margin: 0, color:'#004F77' }} >Fronthbooth Document Viewer</h2>
         <div>
           {currentFile && (
             <>
               <span style={{ marginRight: '15px', fontSize: '0.9rem' }}>
                 Editing: <strong>{currentFile.name}</strong>
               </span>
-              <button className="btn btn-secondary" onClick={handleClear}>
+              <button className="btn btn-secondary" 
+              style={{ backgroundColor: '#FFC106', color: '#004F77' }}
+              onClick={handleClear}>
                 Close / Upload New
               </button>
             </>

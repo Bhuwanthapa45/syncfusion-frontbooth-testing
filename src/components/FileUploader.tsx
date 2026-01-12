@@ -32,7 +32,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect }) => {
     >
       <div style={{ textAlign: 'center' }}>
         <h3>Drag & Drop files here</h3>
-        <p>Supports PDF, Word, Excel, Images</p>
+        <p>Supports PDF, Word, Excel, Images, PPT, Audio, Video</p>
         <button className="btn btn-primary" onClick={() => inputRef.current?.click()}>
           Browse Files
         </button>
@@ -41,7 +41,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect }) => {
           ref={inputRef} 
           style={{ display: 'none' }} 
           onChange={handleChange} 
-          accept=".pdf,.doc,.docx,.xlsx,.xls,.png,.jpg,.jpeg"
+          accept=".pdf,.doc,.docx,.xlsx,.xls,.png,.jpg,.jpeg,.ppt,.pptx,.potx,.mp4,.webm,.mp3,.wav"
         />
       </div>
     </div>

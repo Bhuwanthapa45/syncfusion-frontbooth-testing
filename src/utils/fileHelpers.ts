@@ -1,4 +1,4 @@
-export type FileType = 'PDF' | 'WORD' | 'EXCEL' | 'IMAGE' | 'UNKNOWN';
+export type FileType = 'PDF' | 'WORD' | 'EXCEL' | 'IMAGE' | 'POWERPOINT' | 'VIDEO' | 'AUDIO' | 'UNKNOWN';
 
 export const getFileType = (fileName : string) : FileType =>{
     const extension = fileName.split('.').pop()?.toLowerCase();
@@ -19,6 +19,17 @@ export const getFileType = (fileName : string) : FileType =>{
     case 'jpeg':
     case 'png':
       return 'IMAGE';
+    case 'pptx':
+    case 'ppt':
+    case 'potx':
+      return 'POWERPOINT';
+    case 'mp4':
+    case 'webm':
+    case 'ogg':
+      return 'VIDEO';
+    case 'mp3':
+    case 'wav':
+      return 'AUDIO';
     default:
       return 'UNKNOWN';
   }

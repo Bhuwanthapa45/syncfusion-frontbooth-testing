@@ -5,6 +5,7 @@ import PdfViewer from './components/PdfViewer';
 import DocEditor from './components/DocEditor';
 import SpreadsheetViewer from './components/SpreadsheetViewer';
 import ImageAnnotator from './components/ImageAnnotator';
+import PptViewer from './components/PptViewer';
 import { getFileType, type  FileType } from './utils/fileHelpers';
 
 
@@ -43,6 +44,8 @@ function App() {
         return <SpreadsheetViewer file={currentFile} />;
       case 'IMAGE':
         return <ImageAnnotator file={currentFile} />;
+      case 'POWERPOINT':
+        return <PptViewer file={currentFile} />;
       default:
         return <div>Unsupported File</div>;
     }

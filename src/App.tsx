@@ -1,89 +1,95 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import './App.css';
 import FileUploader from './components/FileUploader';
+import FileList from './components/FileList'; 
+
+// Viewers
 import PdfViewer from './components/PdfViewer';
 import DocEditor from './components/DocEditor';
 import SpreadsheetViewer from './components/SpreadsheetViewer';
 import ImageAnnotator from './components/ImageAnnotator';
-import PptViewer from './components/PptViewer';
-import MediaPlayer from './components/MediaPlayer';
-import { getFileType, type  FileType } from './utils/fileHelpers';
+import PptViewer from './components/PptViewer'; 
+import MediaPlayer from './components/MediaPlayer'; 
 
-
+import { getFileType } from './utils/fileHelpers';
 
 function App() {
-  const [currentFile, setCurrentFile] = useState<File | null>(null);
-  const [fileType, setFileType] = useState<FileType>('UNKNOWN');
-  const [error, setError] = useState<string | null>(null);
+  // STATE 1: List of all files
+  const [files, setFiles] = useState<File[]>([]);
+  
+  // STATE 2: The single file currently being viewed (if any)
+  const [activeFile, setActiveFile] = useState<File | null>(null);
 
-  const handleFileSelect = (file: File) => {
-    const type = getFileType(file.name);
-    if (type === 'UNKNOWN') {
-      setError(`File type not supported: ${file.name}`);
-      return;
+  // 1. Handle adding new files to the list
+  const handleFilesSelected = (newFiles: File[]) => {
+    // Append new files to existing list
+    setFiles((prev) => [...prev, ...newFiles]);
+  };
+
+  // 2. Handle removing a file from the list
+  const handleRemoveFile = (indexToRemove: number) => {
+    setFiles((prev) => prev.filter((_, index) => index !== indexToRemove));
+    // If we removed the currently open file, close the viewer
+    if (activeFile === files[indexToRemove]) {
+      setActiveFile(null);
     }
-    setError(null);
-    setFileType(type);
-    setCurrentFile(file);
   };
 
-  const handleClear = () => {
-    setCurrentFile(null);
-    setFileType('UNKNOWN');
-    setError(null);
-  };
-
+  // 3. Render the correct viewer based on activeFile type
   const renderViewer = () => {
-    if (!currentFile) return <FileUploader onFileSelect={handleFileSelect} />;
+    if (!activeFile) return null;
 
-    switch (fileType) {
-      case 'PDF':
-        return <PdfViewer file={currentFile} />;
-      case 'WORD':
-        return <DocEditor file={currentFile} />;
-      case 'EXCEL':
-        return <SpreadsheetViewer file={currentFile} />;
-      case 'IMAGE':
-        return <ImageAnnotator file={currentFile} />;
-      case 'POWERPOINT':
-        return <PptViewer file={currentFile} />;
-      case 'VIDEO':
-        return <MediaPlayer file={currentFile} type="VIDEO" />;
-      case 'AUDIO':
-        return <MediaPlayer file={currentFile} type="AUDIO" />;
-      default:
-        return <div>Unsupported File</div>;
+    const type = getFileType(activeFile.name);
+
+    switch (type) {
+      case 'PDF': return <PdfViewer file={activeFile} />;
+      case 'WORD': return <DocEditor file={activeFile} />;
+      case 'EXCEL': return <SpreadsheetViewer file={activeFile} />;
+      case 'IMAGE': return <ImageAnnotator file={activeFile} />;
+      case 'POWERPOINT': return <PptViewer file={activeFile} />;
+      case 'VIDEO': return <MediaPlayer file={activeFile} type="VIDEO" />;
+      case 'AUDIO': return <MediaPlayer file={activeFile} type="AUDIO" />;
+      default: return <div className="p-4 text-center">Unsupported File Type</div>;
     }
   };
 
   return (
     <div className="app-container">
+      
       <header className="toolbar">
-        <h2 style={{ margin: 0, color:'#004F77' }} >Fronthbooth Document Viewer</h2>
-        <div>
-          {currentFile && (
-            <>
-              <span style={{ marginRight: '15px', fontSize: '0.9rem' }}>
-                Editing: <strong>{currentFile.name}</strong>
-              </span>
-              <button className="btn btn-secondary" 
-              style={{ backgroundColor: '#FFC106', color: '#004F77' }}
-              onClick={handleClear}>
-                Close / Upload New
-              </button>
-            </>
-          )}
-        </div>
+        <h2 style={{ margin: 0, color:'#004F77' }}>Frontbooth Document Manager</h2>
+        
+        {activeFile && (
+          <button 
+            className="btn btn-secondary" 
+             style={{ backgroundColor: '#FFC106', color: '#004F77' }}
+            onClick={() => setActiveFile(null)} // Close viewer logic
+          >
+            ← Back to File List
+          </button>
+        )}
       </header>
 
-      {error && (
-        <div style={{ background: '#ffebee', color: '#c62828', padding: '10px', textAlign: 'center' }}>
-          {error}
-        </div>
-      )}
+      
+      <main className="viewer-container" style={{ padding: '20px', overflowY: 'auto' }}>
+        
+        {/* VIEW 1: If NO file is active, show Uploader + List */}
+        {!activeFile ? (
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <FileUploader onFilesSelected={handleFilesSelected} />
+            <FileList 
+              files={files} 
+              onView={(file) => setActiveFile(file)} 
+              onRemove={handleRemoveFile} 
+            />
+          </div>
+        ) : (
+          /* VIEW 2: If a file IS active, show the Viewer component */
+          <div style={{ height: '100%' }}>
+             {renderViewer()}
+          </div>
+        )}
 
-      <main className="viewer-container">
-        {renderViewer()}
       </main>
     </div>
   );

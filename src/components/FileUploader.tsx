@@ -1,22 +1,25 @@
 import React, { useRef } from 'react';
 
 interface FileUploaderProps {
-  onFileSelect: (file: File) => void;
+  onFilesSelected: (files: File[]) => void; 
 }
 
-const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect }) => {
+const FileUploader: React.FC<FileUploaderProps> = ({ onFilesSelected }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      onFileSelect(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      // Convert FileList to Array
+      const filesArray = Array.from(e.dataTransfer.files);
+      onFilesSelected(filesArray);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      onFileSelect(e.target.files[0]);
+    if (e.target.files && e.target.files.length > 0) {
+      const filesArray = Array.from(e.target.files);
+      onFilesSelected(filesArray);
     }
   };
 
@@ -24,28 +27,24 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect }) => {
     <div 
       className="uploader-wrapper"
       style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%',
-        border: '2px dashed #ccc', borderRadius: '8px', margin: '20px', backgroundColor: '#fafafa'
+        border: '2px dashed #ccc', borderRadius: '8px', padding: '20px',
+        backgroundColor: '#fafafa', textAlign: 'center', cursor: 'pointer'
       }}
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
+      onClick={() => inputRef.current?.click()}
     >
-      <div style={{ textAlign: 'center' }}>
-        <h3>Drag & Drop files here</h3>
-        <p>Supports PDF, Word, Excel, Images, PPT, Audio, Video</p>
-        <button className="btn btn-primary" 
-        style={{ backgroundColor: '#004F77', color: 'white' }}
-        onClick={() => inputRef.current?.click()}>
-          Browse Files
-        </button>
-        <input 
-          type="file" 
-          ref={inputRef} 
-          style={{ display: 'none' }} 
-          onChange={handleChange} 
-          accept=".pdf,.doc,.docx,.xlsx,.xls,.png,.jpg,.jpeg,.ppt,.pptx,.potx,.mp4,.webm,.mp3,.wav"
-        />
-      </div>
+      <h3 style={{ color: '#004F77' }}>Drag & Drop or Click to Upload</h3>
+      <p style={{ color: '#004F77' }}>Upload multiple files.</p>
+      
+      <input 
+        type="file" 
+        multiple
+        ref={inputRef} 
+        style={{ display: 'none' }} 
+        onChange={handleChange} 
+        accept=".pdf,.doc,.docx,.xlsx,.xls,.png,.jpg,.jpeg,.ppt,.pptx,.mp4,.webm,.mp3"
+      />
     </div>
   );
 };

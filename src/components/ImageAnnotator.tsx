@@ -1,5 +1,3 @@
-
-
 import React, { useRef, useEffect } from 'react';
 import { ImageEditorComponent } from '@syncfusion/ej2-react-image-editor';
 import type { ZoomSettingsModel } from '@syncfusion/ej2-react-image-editor';

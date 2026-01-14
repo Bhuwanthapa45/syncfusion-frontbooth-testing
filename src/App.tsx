@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import FileUploader from './components/FileUploader';
 import FileList from './components/FileList'; 
+// Imports our custom database helper functions to talk to IndexedDB.
 import { storeFile, getFileFromDB } from './utils/db';
 // Viewers
 import PdfViewer from './components/PdfViewer';
@@ -10,6 +11,7 @@ import SpreadsheetViewer from './components/SpreadsheetViewer';
 import ImageAnnotator from './components/ImageAnnotator';
 import PptViewer from './components/PptViewer'; 
 import MediaPlayer from './components/MediaPlayer'; 
+// Helper to determine if a file is PDF, Image, etc.
 import { getFileType } from './utils/fileHelpers';
 
 // Interface to track ID along with the File
@@ -19,22 +21,29 @@ interface AppFile {
 }
 
 function App() {
+  // STATE: Stores the list of all uploaded files in the Dashboard.
   const [files, setFiles] = useState<AppFile[]>([]);
-  
-  // Viewer Mode State
+  // STATE: Boolean flag. 'false' = Dashboard (Main Tab), 'true' = Viewer (Popup Window).
   const [isViewerMode, setIsViewerMode] = useState(false);
+  // STATE: The ID of the file currently being looked at.
   const [activeFileId, setActiveFileId] = useState<string | null>(null);
+  // STATE: The actual File object loaded from the DB for the viewer.
   const [viewerFile, setViewerFile] = useState<File | null>(null);
+  // STATE: Array of IDs representing the playback order (for Next/Prev buttons).
   const [playlist, setPlaylist] = useState<string[]>([]);
+  // STATE: Loading indicator (true when fetching from DB).
   const [loading, setLoading] = useState(false);
+  // STATE: Error message container.
   const [error, setError] = useState<string | null>(null);
 
-  // 1. INITIALIZATION
+
+  // Runs once when the component mounts. Checks URL to decide if we are in Viewer Mode.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const mode = params.get('mode');
     const fileId = params.get('fileId');
 
+    // If the URL has 'mode=view', we switch the UI to the Viewer layout.
     if (mode === 'view' && fileId) {
       setIsViewerMode(true);
       setActiveFileId(fileId);
